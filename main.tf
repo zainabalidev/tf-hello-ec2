@@ -5,13 +5,27 @@ locals {
 resource "aws_instance" "server" {
   count = var.instance_count
   
-  ami           = data.aws_ami.latest_amazon_linux.id
+  ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
   vpc_security_group_ids = [aws_security_group.server_sg.id]
 
   tags = {
     Name = "${local.resource_name}-server-${count.index + 1}"
     ManagedBy = "Terraform"
+  }
+}
+
+resource "aws_instance" "docker_host" {
+  
+  ami           = data.aws_ami.ubuntu.id 
+  instance_type = var.instance_type
+
+  user_data = file("${path.module}/install_docker.sh")
+
+  user_data_replace_on_change = true
+
+  tags = {
+    Name = "Ubuntu-Docker-Host"
   }
 }
 
