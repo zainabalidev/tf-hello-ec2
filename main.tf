@@ -19,6 +19,7 @@ resource "aws_instance" "docker_host" {
   
   ami           = data.aws_ami.ubuntu.id 
   instance_type = var.instance_type
+  vpc_security_group_ids = [aws_security_group.server_sg.id]
 
   user_data = file("${path.module}/install_docker.sh")
 
@@ -65,4 +66,18 @@ resource "aws_vpc_security_group_ingress_rule" "allow_http" {
 
   to_port = 80 
 
+}
+
+# This rule allows ALL inbound traffic to the server_sg
+resource "aws_vpc_security_group_ingress_rule" "allow_all_inbound" {
+  security_group_id = aws_security_group.server_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"    # -1 means all protocols
+  
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
+  security_group_id = aws_security_group.server_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
 }
