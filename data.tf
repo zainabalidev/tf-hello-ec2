@@ -1,9 +1,15 @@
-data "aws_ami" "latest_amazon_linux" {
+data "aws_ami" "ubuntu" {
   most_recent = true
-  owners = ["amazon"]
 
   filter {
-    name = "name"
-    values = ["al2023-ami-2023.11.20260406.2-kernel-6.18-x86_64"]
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
 }
